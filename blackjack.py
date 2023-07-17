@@ -193,9 +193,14 @@ def main():
     print(f"{colors.fg.yellow}")
     print(f"\n---Directions---")
     print(f"{colors.fg.cyan}", end="")
-    print(f"Enter how much $ to start with. (max $1,000,000)")
-    print(f"You and the dealer will be dealt 2 cards each")
-    print(f"The rules are to TODO!!!")
+    print(f"This is a simple game of Black Jack.")
+    print(f"Enter your starting chip amount. (max $1,000,000)")
+    print(f"The player will then be asked to place your bet for the hand")
+    print(f"Cards are then dealt to the player and the dealer")
+    print(f"The player will then be asked to hit or stand their hand")
+    print(f"If player wins the hand, payout will be based on the bet")
+    print(f"If the player loses, they lose their bet")
+    print(f"The game continues until the player's chip count reaches 0")
     print(f"{colors.reset}")
    
     #init Chips class
@@ -264,41 +269,55 @@ def main():
         player_hand.add_card(deck.deal())
         dealer_hand.add_card(deck.deal())
 
+        #print the initial hand after cards are dealt
         print_player_hand(dealer_hand, player_hand)
         
-        #TODO
+        #detect if player has a winning black jack hand
         if dealer_hand.aces + dealer_hand.tens != 2:
             if player_hand.aces + player_hand.tens == 2:
                 print_hands(dealer_hand, player_hand)
                 print(f"Player has a Black Jack!\n")
                 chips.win_bet()
 
+        #detect all possible other hands and if player or dealer wins
         if player_hand.aces + player_hand.tens < 2:
             hit_stand(deck, dealer_hand, player_hand)
             print_hands(dealer_hand, player_hand)
+
+            #dealer hand will hit if value is < 17
             while dealer_hand.value < 17:
                 dealer_hand.add_card(deck.deal())
                 dealer_hand.adjust_for_ace()
+
+            #player busts
             if player_hand.value > 21:
                 print_player_hand(dealer_hand, player_hand)
                 print(f"{colors.fg.red}You busted...You lose the hand!")
                 print(f"{colors.reset}")
                 chips.lose_bet()
+
+            #dealer busts
             elif dealer_hand.value > 21:
                 print_hands(dealer_hand, player_hand)
                 print(f"{colors.fg.green}Dealer busts...You win the hand!")
                 print(f"{colors.reset}")
                 chips.win_bet()
+
+            #dealer wins if hand value > player hand value
             elif dealer_hand.value > player_hand.value:
                 print_hands(dealer_hand, player_hand)
                 print(f"{colors.fg.red}Dealer wins...You lose the hand!")
                 print(f"{colors.reset}")
                 chips.lose_bet()
+
+            #dealer loses if hand value < player hand value
             elif dealer_hand.value < player_hand.value:
                 print_hands(dealer_hand, player_hand)
                 print(f"{colors.fg.green}Dealer loses...You win the hand!")
                 print(f"{colors.reset}")
                 chips.win_bet()
+
+            #dealer and player hand values are tied
             else:
                 print_hands(dealer_hand, player_hand)
                 print(f"You tied the dealer...Your hand is a push.\n")
